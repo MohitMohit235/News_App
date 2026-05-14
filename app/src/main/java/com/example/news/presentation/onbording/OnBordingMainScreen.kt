@@ -1,64 +1,41 @@
 package com.example.news.presentation.onbording
 
-import androidx.compose.foundation.Image
+import android.R.attr.category
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.news.R
-import com.example.news.data.model.News
-import com.example.news.data.model.NewsList
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.news.domain.NewsViewModel
+import com.example.news.presentation.animationEffects.ShimmerEffect
 import com.example.news.presentation.common.NewsCard
 import com.example.news.presentation.common.NewsSearchBar
 import com.example.news.presentation.common.NewsTabsBar
 import com.example.news.presentation.common.NewsTopBar
-import dagger.hilt.InstallIn
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Inject
+
 @Composable
 fun MainNewsScreen(
     viewModel: NewsViewModel = hiltViewModel()
@@ -88,17 +65,19 @@ fun MainNewsScreen(
        "other"
     )
 
+    val currentCategory =
+        categories[pagerState.currentPage]
+
+
+    val newsItems = remember(currentCategory){
+        viewModel.news
+    }.collectAsLazyPagingItems()
+
     LaunchedEffect(pagerState.currentPage){
+        Log.d("NEWS_UI", newsItems.itemCount.toString())
         val cetegory = categories[pagerState.currentPage]
-
-        viewModel.getNewsData(category = cetegory)
+        viewModel.changeCategory(cetegory)
     }
-
-
-    val state by
-    viewModel.newsData.collectAsState()
-
-
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -116,37 +95,79 @@ fun MainNewsScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         when{
-            state.Loading->{
-                Box(modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ){
-                    CircularProgressIndicator(
-                        trackColor = Color.White,
-                        strokeCap = StrokeCap.Round
+
+            newsItems.loadState.refresh
+                    is androidx.paging.LoadState.Loading -> {
+
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment =
+                        Alignment.Center
+                ) {
+                    Column(){
+                        repeat(8){
+                            ShimmerEffect(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(150.dp)
+                                    .padding(16.dp)
+                                    .background(
+                                        Color.LightGray,
+                                        shape = RoundedCornerShape(10.dp)
+                                    )
+                            )
+                        }
+                    }
+                }
+            }
+
+            newsItems.loadState.refresh
+                    is androidx.paging.LoadState.Error -> {
+
+                val error =
+                    newsItems.loadState.refresh
+                            as androidx.paging.LoadState.Error
+
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment =
+                        Alignment.Center
+                ) {
+
+
+
+                    Text(
+                        text =
+                            "Error: ${error.error.message}"
                     )
                 }
             }
 
-            state.Falior !=null->{
-                Box(modifier = Modifier.fillMaxSize()){
-                    Text(text = "Error: ${state.Falior}")
+            else -> {
+
+                HorizontalPager(
+                    state = pagerState,
+                    key = {page-> categories[page]}
+                ) { page ->
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement =
+                            Arrangement.spacedBy(16.dp)
+                    ) {
+
+                        items(newsItems.itemCount) { index ->
+
+                            val newsItem =
+                                newsItems[index]
+
+                            newsItem?.let {
+                                NewsCard(it)
+                            }
+
+                        }
+                    }
                 }
-            }
-
-            else->{
-
-                HorizontalPager(state=pagerState){ page->
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ){
-                   items(state.Success?.results?:emptyList()){news->
-                            NewsCard(news)
-                   }
-                 }
-              }
-
-
             }
         }
     }
