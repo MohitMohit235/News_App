@@ -28,11 +28,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.compose.rememberNavController
 import com.example.news.presentation.animationEffects.ShimmerEffect
+import com.example.news.presentation.authentication.SinghUpScreen
 import com.example.news.presentation.common.NewsCard
+import com.example.news.presentation.common.NewsSearchBar
+import com.example.news.presentation.navigation.navGraph.NavGraph
 import com.example.news.presentation.onbording.MainNewsScreen
 import com.example.news.presentation.onbording.OnBordScreen
 import com.example.news.ui.theme.NewsTheme
+import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,12 +47,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         enableEdgeToEdge()
+        FirebaseApp.initializeApp(this)
         setContent {
             NewsTheme {
+                val navController = rememberNavController()
                 Box(modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.onBackground)){
-                   MainNewsScreen()
+                    .background(Color.Black)){
+                  // MainNewsScreen(navController = navController)
+                   // NewsSearchBar()
+                  //  SinghUpScreen()
+                    NavGraph()
                 }
             }
         }

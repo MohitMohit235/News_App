@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.news.R
 import com.example.news.data.model.News
@@ -47,53 +48,62 @@ import java.nio.file.WatchEvent
 
 @Composable
 fun NewsCard(
-    news: News
+        news: News,
+        onclick: () -> Unit,
 ) {
-     val Font = FontFamily(Font(R.font.jrfonts))
-
+    val Font = FontFamily(Font(R.font.jrfonts))
+    
     Box(
-        modifier = Modifier.fillMaxWidth()
-            .height(102.dp)
-       ){
+            modifier = Modifier
+                    .fillMaxWidth()
+                    .height(102.dp)
+                    .clickable { onclick }
+    ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ){
+                modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
             AsyncImage(
-                model = news.image_url,
-                contentDescription = "Image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.size(102.dp)
-                    .clip(shape = RoundedCornerShape(topStart = 12.dp, bottomStart = 12.dp))
+                    model = news.image_url,
+                    contentDescription = "Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                            .size(102.dp)
+                            .clip(shape = RoundedCornerShape(topStart = 12.dp, bottomStart = 12.dp))
             )
-
+            
             Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(5.dp)
-            ){
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
                 news.title?.let {
                     Text(
-                        text = it,
-                        maxLines = 1,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        overflow = TextOverflow.Ellipsis,
-                        fontFamily = Font,
-                        fontSize = 16.sp)
+                            text = it,
+                            maxLines = 1,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            overflow = TextOverflow.Ellipsis,
+                            fontFamily = Font,
+                            fontSize = 16.sp
+                    )
                 }
-
+                
                 news.description?.let {
-                    Text(text = it,
-                        maxLines = 2,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        overflow = TextOverflow.Ellipsis,
-                        fontFamily = Font,
-                        fontSize = 11.sp)
+                    Text(
+                            text = it,
+                            maxLines = 2,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            overflow = TextOverflow.Ellipsis,
+                            fontFamily = Font,
+                            fontSize = 11.sp
+                    )
                 }
             }
-
+            
         }
-
+        
     }
-
+    
 }

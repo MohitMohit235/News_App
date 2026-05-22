@@ -1,24 +1,18 @@
-package com.example.news.domain
+package com.example.news.domain.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import com.example.news.data.model.NewsList
-import com.example.news.data.pagging.NewsPaggingSource
-import com.example.news.data.remote.ApiService
 import com.example.news.data.repository.NewsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -35,19 +29,49 @@ class NewsViewModel @Inject constructor(
         private var currentcategory: String? =
             null
 
-    private val _category =
+    private val searchQuery =
+        MutableStateFlow("india")
+
+    private val category =
         MutableStateFlow("top")
 
-    val news = _category.flatMapLatest {
-        viewModelRepository.getPagesNews(
-            category = it
-        )
-    }.cachedIn(viewModelScope)
+    private val cuntry =
+        MutableStateFlow("in")
 
-    fun changeCategory(category: String) {
-        _category.value = category
+    val news =
+        combine(
+            category,
+            searchQuery,
+            cuntry
+        ) { category, query , country->
+            Triple(
+                category,
+                query,
+                country
+            )
+
+        }
+            .flatMapLatest { (category, query,cuntry) ->
+
+                viewModelRepository.getPagesNews(
+                    category = category,
+                    searchQuery = query,
+                    cuntry = cuntry
+                )
+            }
+            .cachedIn(viewModelScope)
+
+    fun searchQuery(query: String) {
+        searchQuery.value = query
     }
 
+    fun changeCategory(category: String) {
+        this.category.value = category
+    }
+
+    fun changeCountry(countryCode: String) {
+        cuntry.value = countryCode
+    }
     
     init {
         getNewsData(category = "top")

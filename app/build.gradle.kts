@@ -1,32 +1,34 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services")
+    kotlin("plugin.parcelize")
     alias(libs.plugins.kotlin.compose)
     id("com.google.dagger.hilt.android")
     kotlin("kapt")
-
+    
 }
 
 android {
     namespace = "com.example.news"
     compileSdk = 36
-
+    
     defaultConfig {
         applicationId = "com.example.news"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
+        
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
             )
         }
     }
@@ -37,11 +39,11 @@ android {
     buildFeatures {
         compose = true
     }
-
+    
     kotlinOptions {
         jvmTarget = "17"
     }
-
+    
 }
 
 dependencies {
@@ -77,9 +79,20 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation("com.google.dagger:hilt-android:2.57.1")
     kapt("com.google.dagger:hilt-compiler:2.57.1")
-
+    
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
     implementation("androidx.compose.material:material-icons-core")
     implementation("androidx.compose.material:material-icons-extended")
-
+    
+  
+    
+   
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:34.0.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
+    
+    
 }

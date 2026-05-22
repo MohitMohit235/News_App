@@ -3,12 +3,15 @@ package com.example.news.data.pagging
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import androidx.room.Query
 import com.example.news.data.model.News
 import com.example.news.data.remote.ApiService
 
 class NewsPaggingSource(
     private val apiService: ApiService,
-    private val category: String?
+    private val category: String?,
+    private val searchQuery: String?,
+    private val cuntry: String?
 ) : PagingSource<String, News>() {
 
     override fun getRefreshKey(
@@ -27,7 +30,9 @@ class NewsPaggingSource(
 
             val response = apiService.getNewsList(
                 category = category,
-                page = pageToken
+                page = pageToken,
+                searchQuery = searchQuery,
+                county = cuntry
             )
 
             Log.d(

@@ -66,7 +66,7 @@ fun OnBordPage(
             fontSize = 25.sp,
             style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(horizontal = 30.dp),
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.background
         )
 
         Text(
@@ -75,7 +75,7 @@ fun OnBordPage(
             fontFamily = Fonts,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(horizontal = 30.dp),
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.background
         )
     }
 }

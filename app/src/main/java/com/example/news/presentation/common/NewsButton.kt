@@ -38,7 +38,7 @@ fun NewsTextButton(
         Text(
             text = text,
             style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.background
         )
     }
 }

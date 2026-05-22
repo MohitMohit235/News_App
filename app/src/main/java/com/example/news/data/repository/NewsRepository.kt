@@ -33,7 +33,9 @@ class NewsRepository @Inject constructor (
 
 
     fun getPagesNews(
-        category: String
+        category: String,
+        searchQuery: String,
+        cuntry: String
     ): Flow<PagingData<News>>{
         return Pager(
             config = PagingConfig(
@@ -42,7 +44,7 @@ class NewsRepository @Inject constructor (
                 prefetchDistance = 3
             ),
             pagingSourceFactory = {
-                NewsPaggingSource(api,category)
+                NewsPaggingSource(api,category,searchQuery,cuntry)
             },
         ).flow
     }

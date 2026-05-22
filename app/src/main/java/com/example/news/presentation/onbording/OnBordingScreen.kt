@@ -1,6 +1,7 @@
 package com.example.news.presentation.onbording
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
@@ -20,18 +22,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.news.presentation.common.NewsButton
 import com.example.news.presentation.common.NewsTextButton
 import com.example.news.presentation.common.PageIndicator
+import com.example.news.presentation.navigation.route.Screen
 import com.example.news.presentation.onbording.component.OnBordPage
 import kotlinx.coroutines.launch
 import java.nio.file.WatchEvent
 
 @SuppressLint("RememberReturnType")
 @Composable
-fun OnBordScreen() {
+fun OnBordScreen(
+        onNextClick:()-> Unit
+) {
 
-    Column() {
+    Column(
+            modifier = Modifier.background(MaterialTheme.colorScheme.onBackground)
+    ){
 
         val PagerState = rememberPagerState(initialPage = 0) {
             pages.size
@@ -81,8 +89,8 @@ fun OnBordScreen() {
 
                 NewsButton(text = buttonState.value[1], onClick = {
                     scop.launch {
-                        if (PagerState.currentPage==3){
-
+                        if (PagerState.currentPage==2){
+                           onNextClick()
                         }else {
                             PagerState.animateScrollToPage(page = PagerState.currentPage+1)
                         }
