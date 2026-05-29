@@ -12,8 +12,9 @@ sealed class Screen(val route: String) {
     object SignUpScreen : Screen(route = "signup_screen")
     
     //Home Graph
-    object HomeScreen : Screen(route = "profile_screen")
+    object HomeScreen : Screen(route = "home_screen")
     object DetailScreen : Screen(route = "detail_screen")
+    object SearchScreen : Screen(route = "search_screen")
 }
 
 

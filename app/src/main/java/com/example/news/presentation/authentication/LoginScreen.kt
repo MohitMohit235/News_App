@@ -1,7 +1,15 @@
 package com.example.news.presentation.authentication
 
 
+import android.view.animation.BounceInterpolator
 import android.widget.Toast
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -22,26 +31,29 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawStyle
+import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.graphics.vector.VectorProperty
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -56,8 +68,6 @@ import coil.compose.AsyncImage
 import com.example.news.R
 import com.example.news.presentation.viewmodel.AuthenticationViewModel
 import com.google.firebase.Firebase
-import com.google.firebase.FirebaseApp
-import com.google.firebase.app
 import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
@@ -67,23 +77,58 @@ fun LoginScreen(
         onSignup: () -> Unit,
         onSuccessLogin: () -> Unit,
         navController: NavController,
-        authenticationViewModel: AuthenticationViewModel = hiltViewModel()
+        authenticationViewModel: AuthenticationViewModel = hiltViewModel(),
 ) {
     val scop = rememberCoroutineScope()
     val keybordController = LocalSoftwareKeyboardController.current
+    
+    var startAnimation by remember { mutableStateOf(false) }
+    
+    LaunchedEffect(key1 =true){
+        startAnimation = true
+    }
+    
+    val animatedProgress by animateFloatAsState(
+            targetValue = if (startAnimation) 0f else 1f,
+            animationSpec = tween(
+                    durationMillis = 800,
+                    easing = FastOutSlowInEasing
+            ),
+            label = "login animation"
+    )
     
     Box(
             modifier = Modifier
                     .fillMaxSize()
                     .padding(4.dp)
-                    .background(Color.White),
-            contentAlignment = Alignment.BottomCenter
+                    .background(Color(0xFF2F6C66)),
+            contentAlignment = Alignment.Center
     ) {
+        
+        Canvas(
+                modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center)
+        ) {
+                val screenHeight = size.height
+                val curruntY = screenHeight * animatedProgress
+            
+            withTransform({
+                translate(left = 0F, top = 0F)
+                rotate(degrees = 50F)
+            }) {
+                drawRect(
+                        color = Color.White,
+                        topLeft = Offset(x = 0F, y = curruntY),
+                        size = size*1.1F,
+                )
+            }
+        }
         
         Column(
                 modifier = Modifier
                         .fillMaxSize(),
-                verticalArrangement = Arrangement.Bottom,
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
@@ -100,23 +145,21 @@ fun LoginScreen(
                     Text(
                             text = "LogIn",
                             fontSize = 30.sp,
-                            fontFamily = authenticationViewModel.font,
+                            fontFamily = authenticationViewModel.font1,
                             modifier = Modifier.padding(12.dp)
                     )
                     
                     Spacer(Modifier.height(20.dp))
                     
                     OutlinedTextField(
-                            modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 40.dp),
+                            modifier = Modifier,
                             value = authenticationViewModel.email,
                             onValueChange = { authenticationViewModel.email = it },
                             label = {
                                 Text(
                                         text = "Enter email",
                                         style = MaterialTheme.typography.bodyLarge,
-                                        fontFamily = authenticationViewModel.font,
+                                        fontFamily = authenticationViewModel.font1,
                                         color = if (authenticationViewModel.email.isBlank()) Color.Black else Color.Black
                                 )
                             },
@@ -135,15 +178,10 @@ fun LoginScreen(
                                     Text(
                                             text = "please enter your valid email",
                                             style = MaterialTheme.typography.bodySmall,
-                                            fontFamily = authenticationViewModel.font
+                                            fontFamily = authenticationViewModel.font1
                                     ) else null
                             },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                    focusedContainerColor = MaterialTheme.colorScheme.background,
-                                    unfocusedTextColor = MaterialTheme.colorScheme.background,
-                                    focusedBorderColor = Color.Black,
-                                    unfocusedBorderColor = Color.Black
-                            ),
+                            colors = authenticationViewModel.buttonClor(),
                             keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Email,
                                     imeAction = ImeAction.Done
@@ -151,45 +189,44 @@ fun LoginScreen(
                             keyboardActions = KeyboardActions(
                                     onDone = { keybordController?.hide() }
                             ),
+                            
                             singleLine = true
                     )
                     
                     Spacer(modifier = Modifier.height(25.dp))
                     
                     OutlinedTextField(
-                            modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 40.dp),
+                            modifier = Modifier,
                             value = authenticationViewModel.password,
                             onValueChange = { authenticationViewModel.password = it },
                             label = {
                                 Text(
                                         text = "Enter password",
                                         style = MaterialTheme.typography.bodyLarge,
-                                        fontFamily = authenticationViewModel.font,
+                                        fontFamily = authenticationViewModel.font1,
                                         color = if (authenticationViewModel.password.isBlank()) Color.Black else Color.Black
                                 )
                             },
-                            colors = OutlinedTextFieldDefaults.colors(
-                                    focusedContainerColor = MaterialTheme.colorScheme.background,
-                                    unfocusedTextColor = MaterialTheme.colorScheme.background,
-                                    focusedBorderColor = Color.Black,
-                                    unfocusedBorderColor = Color.Black,
-                            ),
+                            colors = authenticationViewModel.buttonClor(),
                             keyboardOptions = KeyboardOptions(
                                     keyboardType = KeyboardType.Email,
                                     imeAction = ImeAction.Done
                             ),
                             singleLine = true,
-                            visualTransformation = if (authenticationViewModel.passwordHide) {
-                                PasswordVisualTransformation()
-                            } else VisualTransformation.None,
+                            
+                            visualTransformation =
+                                if (authenticationViewModel.passwordHide) {
+                                    PasswordVisualTransformation()
+                                } else VisualTransformation.None,
+                            
                             trailingIcon = {
                                 val visibleIcon = if (authenticationViewModel.passwordHide) {
                                     painterResource(id = R.drawable.hide)
                                 } else painterResource(R.drawable.show)
+                                
                                 IconButton(onClick = {
-                                    authenticationViewModel.passwordHide = !authenticationViewModel.passwordHide
+                                    authenticationViewModel.passwordHide =
+                                        !authenticationViewModel.passwordHide
                                 }
                                 ) {
                                     Icon(
@@ -264,10 +301,10 @@ fun LoginScreen(
                             },
                             shape = MaterialTheme.shapes.small,
                             modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 80.dp),
+                                    .width(200.dp)
+                                    .padding(horizontal = 20.dp),
                             colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Blue,
+                                    containerColor = Color(0xFF2F6C66),
                             )
                     ) {
                         Text(text = "Log-in", fontSize = 15.sp)
@@ -281,16 +318,18 @@ fun LoginScreen(
                                     withStyle(
                                             style = SpanStyle(
                                                     color = Color.Black,
-                                                    fontFamily = authenticationViewModel.font
+                                                    fontSize = 12.sp,
+                                                    fontFamily = authenticationViewModel.font1
                                             )
                                     ) {
                                         append("Don't have an account? ")
                                     }
                                     withStyle(
                                             style = SpanStyle(
-                                                    color = Color(0xFF4367C8),
+                                                    color = Color(0xFF2F6C66),
                                                     textDecoration = TextDecoration.Underline,
-                                                    fontFamily = authenticationViewModel.font
+                                                    fontSize = 12.sp,
+                                                    fontFamily = authenticationViewModel.font1
                                             )
                                     ) {
                                         append("Sign up")
@@ -300,12 +339,6 @@ fun LoginScreen(
                     }
                 }
             }
-            AsyncImage(
-                    model = R.drawable.singhup,
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-            )
-            
         }
     }
     

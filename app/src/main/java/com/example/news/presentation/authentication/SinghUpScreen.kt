@@ -1,6 +1,13 @@
 package com.example.news.presentation.authentication
 
 import android.widget.Toast
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,14 +34,18 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -71,20 +82,55 @@ fun SinghUpScreen(
     
     val keybordController = LocalSoftwareKeyboardController.current
     
+    var startingAnimation by remember { mutableStateOf(false) }
     
+    LaunchedEffect(key1 = true){
+        startingAnimation = true
+    }
+    
+    val animationProgress by animateFloatAsState(
+            targetValue = if (startingAnimation) 0f else 1f,
+            animationSpec = tween(
+                    durationMillis = 800,
+                    easing = FastOutSlowInEasing
+            ),
+            label = "animation"
+    )
     
     Box(
             modifier = Modifier
                     .fillMaxSize()
                     .padding(4.dp)
-                    .background(Color.White),
-            contentAlignment = Alignment.BottomCenter
+                    .background(Color(0xFFF7655A)),
+            contentAlignment = Alignment.Center
     ) {
+        
+        Canvas(
+                modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center)
+        ) {
+            
+            val screenSize = size.height
+            
+            val position = screenSize * animationProgress
+            
+            withTransform({
+                translate(left  = 0F)
+                rotate(degrees = 50F)
+            }) {
+                drawRect(
+                        color = Color.White,
+                        topLeft = Offset(x = 0F, y = position),
+                        size = size*1.1F,
+                )
+            }
+        }
         
         Column(
                 modifier = Modifier
                         .fillMaxSize(),
-                verticalArrangement = Arrangement.Bottom,
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
@@ -101,30 +147,28 @@ fun SinghUpScreen(
                     Text(
                             text = "SignUp",
                             fontSize = 30.sp,
-                            fontFamily = authenticationViewModel.font,
+                            fontFamily = authenticationViewModel.font1,
                             modifier = Modifier.padding(12.dp)
                     )
                     
                     Spacer(Modifier.height(20.dp))
                     
                     OutlinedTextField(
-                            modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 40.dp),
+                            modifier = Modifier,
                             value = authenticationViewModel.email,
                             onValueChange = { authenticationViewModel.email = it },
                             label = {
                                 Text(
                                         text = "Enter email",
                                         style = TextStyle(
-                                                fontFamily = authenticationViewModel.font
+                                                fontFamily = authenticationViewModel.font1
                                         ),
                                         color = if (authenticationViewModel.email.isBlank()) Color.Black else Color.Black
                                 )
                             },
                             trailingIcon = if (authenticationViewModel.email.isNotEmpty()) {
                                 {
-                                    IconButton(onClick = {authenticationViewModel.email = " " }) {
+                                    IconButton(onClick = { authenticationViewModel.email = " " }) {
                                         Icon(
                                                 imageVector = Icons.Default.Close,
                                                 contentDescription = null
@@ -137,7 +181,7 @@ fun SinghUpScreen(
                                     Text(
                                             text = "please enter your valid email",
                                             style = MaterialTheme.typography.bodySmall,
-                                            fontFamily =authenticationViewModel.font
+                                            fontFamily = authenticationViewModel.font1
                                     ) else null
                             },
                             
@@ -155,22 +199,18 @@ fun SinghUpScreen(
                     Spacer(modifier = Modifier.height(25.dp))
                     
                     OutlinedTextField(
-                            modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 40.dp),
+                            modifier = Modifier,
                             value = authenticationViewModel.password,
                             onValueChange = { authenticationViewModel.password = it },
                             label = {
                                 Text(
                                         text = "Enter password",
                                         style = MaterialTheme.typography.bodyLarge,
-                                        fontFamily = authenticationViewModel.font,
+                                        fontFamily = authenticationViewModel.font1,
                                         color = if (authenticationViewModel.password.isBlank()) Color.Black else Color.Black
                                 )
                             },
                             colors = OutlinedTextFieldDefaults.colors(
-                                    focusedContainerColor = MaterialTheme.colorScheme.background,
-                                    unfocusedTextColor = MaterialTheme.colorScheme.background,
                                     focusedBorderColor = Color.Black,
                                     unfocusedBorderColor = Color.Black,
                             ),
@@ -187,7 +227,8 @@ fun SinghUpScreen(
                                     painterResource(id = R.drawable.hide)
                                 } else painterResource(R.drawable.show)
                                 IconButton(onClick = {
-                                    authenticationViewModel.passwordHide = !authenticationViewModel.passwordHide
+                                    authenticationViewModel.passwordHide =
+                                        !authenticationViewModel.passwordHide
                                 }
                                 ) {
                                     Icon(
@@ -206,7 +247,7 @@ fun SinghUpScreen(
                             onClick = {
                                 
                                 when {
-                                   authenticationViewModel.email.isBlank() && authenticationViewModel.password.isBlank() -> {
+                                    authenticationViewModel.email.isBlank() && authenticationViewModel.password.isBlank() -> {
                                         Toast.makeText(
                                                 context,
                                                 "Please enter email and password",
@@ -214,7 +255,7 @@ fun SinghUpScreen(
                                         ).show()
                                     }
                                     
-                                  authenticationViewModel.email.isBlank() -> {
+                                    authenticationViewModel.email.isBlank() -> {
                                         Toast.makeText(
                                                 context,
                                                 "Please enter email ",
@@ -233,8 +274,8 @@ fun SinghUpScreen(
                                     
                                     else -> {
                                         Firebase.auth.createUserWithEmailAndPassword(
-                                                authenticationViewModel.email,
-                                                authenticationViewModel.password
+                                                authenticationViewModel.email.trim(),
+                                                authenticationViewModel.password.trim()
                                         )
                                                 .addOnCompleteListener { task ->
                                                     if (task.isSuccessful) {
@@ -255,17 +296,15 @@ fun SinghUpScreen(
                                     }
                                 }
                             },
-                            modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 80.dp),
+                            modifier = Modifier,
                             colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Blue
+                                    containerColor = Color(0xFFF7655A)
                             )
                     ) {
                         Text(
                                 text = "Sign-Up",
                                 fontSize = 15.sp,
-                                fontFamily = authenticationViewModel.font
+                                fontFamily = authenticationViewModel.font1
                         )
                     }
                     
@@ -279,16 +318,16 @@ fun SinghUpScreen(
                                     withStyle(
                                             style = SpanStyle(
                                                     color = Color.Black,
-                                                    fontFamily = authenticationViewModel.font
+                                                    fontFamily = authenticationViewModel.font1
                                             )
                                     ) {
                                         append("Already have an account? ")
                                     }
                                     withStyle(
                                             style = SpanStyle(
-                                                    color = Color(0xFF4367C8),
+                                                    color = Color(0xFFF7655A),
                                                     textDecoration = TextDecoration.Underline,
-                                                    fontFamily = authenticationViewModel.font
+                                                    fontFamily = authenticationViewModel.font1
                                             )
                                     ) {
                                         append("Log in")
@@ -298,13 +337,6 @@ fun SinghUpScreen(
                     }
                 }
             }
-            AsyncImage(
-                    model = R.drawable.singhup,
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-            )
-            
         }
     }
-    
 }

@@ -1,0 +1,17 @@
+package com.example.news.domain.repository
+
+import androidx.paging.PagingData
+import com.example.news.data.model.News
+import com.example.news.data.model.NewsList
+import kotlinx.coroutines.flow.Flow
+
+interface NewsRepository {
+   suspend fun getNews(category: String): Result<NewsList>
+   
+    fun getPagesNews(
+            category: String,
+            query: String,
+            cuntry: String
+    ): Flow<PagingData<News>>
+    
+}

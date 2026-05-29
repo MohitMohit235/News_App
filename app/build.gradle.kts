@@ -16,34 +16,48 @@ android {
     defaultConfig {
         applicationId = "com.example.news"
         minSdk = 24
+        //noinspection OldTargetApi
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
         
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner =
+            "androidx.test.runner.AndroidJUnitRunner"
+        
+        buildConfigField(
+                "String",
+                "NEWS_API_KEY",
+                "\"${project.findProperty("NEWS_API_KEY") ?: ""}\""
+        )
+    }
+    
+    buildFeatures {
+        compose = true
+        buildConfig = true
     }
     
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    getDefaultProguardFile(
+                            "proguard-android-optimize.txt"
+                    ),
                     "proguard-rules.pro"
             )
         }
     }
+    
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    buildFeatures {
-        compose = true
+        sourceCompatibility =
+            JavaVersion.VERSION_17
+        targetCompatibility =
+            JavaVersion.VERSION_17
     }
     
     kotlinOptions {
         jvmTarget = "17"
     }
-    
 }
 
 dependencies {
@@ -84,15 +98,20 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core")
     implementation("androidx.compose.material:material-icons-extended")
     
-  
     
-   
     // Firebase
     implementation(platform("com.google.firebase:firebase-bom:34.0.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2")
+    
+    
+    // crome
+    implementation("androidx.browser:browser:1.8.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.36.0")
+    
+    implementation("com.airbnb.android:lottie-compose:6.6.7")
     
     
 }

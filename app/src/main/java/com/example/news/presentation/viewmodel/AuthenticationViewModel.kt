@@ -18,12 +18,11 @@ class AuthenticationViewModel: ViewModel() {
     var email by  mutableStateOf("")
     var password by  mutableStateOf("")
     var passwordHide by  mutableStateOf(true)
-    val font = FontFamily(Font(R.font.jrfonts))
+    val font1 = FontFamily(Font(R.font.jrfonts))
+    val font2 = FontFamily(Font(R.font.cinze))
     
     @Composable
     fun buttonClor() = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.background,
-            unfocusedTextColor = MaterialTheme.colorScheme.background,
             focusedBorderColor = Color.Black,
             unfocusedBorderColor = Color.Black
     )
