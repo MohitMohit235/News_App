@@ -15,13 +15,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.outlined.Bookmark
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,14 +40,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.news.R
 import com.example.news.data.model.News
+import com.example.news.presentation.viewmodel.NewsViewModel
 
 @Composable
 fun NewsDetailScreen(
         navController: NavController,
+        viewModel: NewsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val font = FontFamily(Font(R.font.jrfonts))
@@ -52,6 +60,8 @@ fun NewsDetailScreen(
                 ?.savedStateHandle
                 ?.get<News>("news")
     
+    
+    val isSaved by viewModel.isNewsSave(news?.artical_id).collectAsState(initial = false)
     
     LazyColumn(
             modifier = Modifier
@@ -78,6 +88,7 @@ fun NewsDetailScreen(
                         contentScale = ContentScale.Crop
                 )
                 
+                
             }
             
             Spacer(
@@ -89,8 +100,7 @@ fun NewsDetailScreen(
                     modifier = Modifier
                             .fillMaxWidth()
                             .clip(MaterialTheme.shapes.medium)
-                            .padding( vertical = 10.dp, horizontal = 10.dp)
-                    ,
+                            .padding(vertical = 10.dp, horizontal = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -99,13 +109,15 @@ fun NewsDetailScreen(
                         fontFamily = font,
                         color = MaterialTheme.colorScheme.background
                 )
+                
+                
+                
                 Text(
                         text = news?.pubDate ?: "No content available",
                         fontFamily = font,
                         color = MaterialTheme.colorScheme.background
                 )
             }
-            
             Spacer(
                     modifier =
                         Modifier.height(20.dp)
@@ -127,13 +139,13 @@ fun NewsDetailScreen(
                     modifier = Modifier
                             .fillMaxWidth()
                             .clip(MaterialTheme.shapes.medium)
-                            .padding( vertical = 10.dp)
+                            .padding(vertical = 10.dp)
                             .padding(horizontal = 8.dp),
                     text = news?.title ?: "",
                     fontSize = 23.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = font,
-               //     textAlign = TextAlign.Center,
+                    //     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.background,
             )
             
@@ -142,12 +154,12 @@ fun NewsDetailScreen(
                     modifier = Modifier
                             .fillMaxWidth()
                             .clip(MaterialTheme.shapes.medium)
-                            .padding( vertical = 10.dp)
+                            .padding(vertical = 10.dp)
                             .padding(horizontal = 8.dp),
                     text = news?.description ?: "",
                     fontFamily = font,
                     fontSize = 20.sp,
-                  //  textAlign = TextAlign.Center,
+                    //  textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.background
             )
             
@@ -169,9 +181,9 @@ fun NewsDetailScreen(
             
             TextButton(
                     onClick = {
-                        news?.link?.let { url->
-                            if (url.isNotEmpty()){
-                                OpenFullNewsDetail( context,url)
+                        news?.link?.let { url ->
+                            if (url.isNotEmpty()) {
+                                OpenFullNewsDetail(context, url)
                             }
                         }
                     },

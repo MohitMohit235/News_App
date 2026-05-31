@@ -4,14 +4,20 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
+import com.example.news.data.localdatabase.NewsEntity
+import com.example.news.data.localdatabase.toNewsEntity
+import com.example.news.data.model.News
 import com.example.news.data.model.NewsList
 import com.example.news.data.repository.NewsRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -37,6 +43,11 @@ class NewsViewModel @Inject constructor(
 
     private val cuntry =
         MutableStateFlow("in")
+    
+    
+    val bookmarkNews : StateFlow<List<NewsEntity>> = viewModelRepository.getBookMarkNews()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000),emptyList())
+    
 
     val news =
         combine(
@@ -55,7 +66,7 @@ class NewsViewModel @Inject constructor(
 
                 viewModelRepository.getPagesNews(
                     category = category,
-                    searchQuery = query,
+                    query = query,
                     cuntry = cuntry
                 )
             }
@@ -73,11 +84,23 @@ class NewsViewModel @Inject constructor(
         cuntry.value = countryCode
     }
     
+    fun isNewsSave(newsId: String?): Flow<Boolean> = viewModelRepository.isBookmark(newsId = newsId?:"")
+    
     init {
         getNewsData(category = "top")
     }
 
 
+    fun toggleButton(news: News, isCurrentlySaves: Boolean){
+        viewModelScope.launch {
+            if (isCurrentlySaves){
+                viewModelRepository.removeBookMark(news = news.toNewsEntity())
+            }else {
+                viewModelRepository.addBookMark(news = news.toNewsEntity())
+            }
+        }
+    }
+    
     fun getNewsData(category: String){
         if (currentcategory==category) return
         currentcategory = category

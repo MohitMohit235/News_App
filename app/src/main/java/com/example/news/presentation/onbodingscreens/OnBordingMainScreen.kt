@@ -186,7 +186,6 @@ fun MainNewsScreen(
                                         NewsCard(
                                                 it,
                                                 onclick = {
-                                                    Log.d("CLICK", "Clicked ${it.title}")
                                                     navController.currentBackStackEntry
                                                             ?.savedStateHandle
                                                             ?.set("news", it)

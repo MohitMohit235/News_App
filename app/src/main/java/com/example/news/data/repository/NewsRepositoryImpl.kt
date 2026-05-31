@@ -2,10 +2,11 @@ package com.example.news.data.repository
 
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.example.news.data.localdatabase.BookMarkDao
+import com.example.news.data.localdatabase.NewsEntity
 import com.example.news.data.model.News
 import com.example.news.data.model.NewsList
 import com.example.news.data.pagging.NewsPaggingSource
@@ -16,6 +17,7 @@ import javax.inject.Inject
 
 class NewsRepositoryImpl @Inject constructor(
         private val api: ApiService,
+        private val bookMarkDao: BookMarkDao,
 ) : NewsRepository {
     
     @SuppressLint("SuspiciousIndentation")
@@ -30,10 +32,23 @@ class NewsRepositoryImpl @Inject constructor(
         }
     }
     
+    override fun getBookMarkNews(): Flow<List<NewsEntity>> = bookMarkDao.getAllBookMarkNews()
+    
+    override fun isBookmark(newsId: String): Flow<Boolean> =
+        bookMarkDao.isNewsBoolMark(newsId = newsId)
+    
+    override suspend fun addBookMark(news: NewsEntity) {
+        bookMarkDao.saveBookMark(news = news)
+    }
+    
+    override suspend fun removeBookMark(news: NewsEntity) {
+        bookMarkDao.removeBookMark(news = news)
+    }
+    
     
     override fun getPagesNews(
             category: String,
-            searchQuery: String,
+            query: String,
             cuntry: String,
     ): Flow<PagingData<News>> {
         return Pager(
@@ -43,7 +58,7 @@ class NewsRepositoryImpl @Inject constructor(
                         prefetchDistance = 3
                 ),
                 pagingSourceFactory = {
-                    NewsPaggingSource(api, category, searchQuery, cuntry)
+                    NewsPaggingSource(api, category, query, cuntry)
                 },
         ).flow
     }

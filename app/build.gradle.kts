@@ -87,8 +87,6 @@ dependencies {
     implementation("androidx.paging:paging-runtime:3.2.1")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("androidx.paging:paging-compose:3.2.1")
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.34.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
     implementation("com.google.dagger:hilt-android:2.57.1")
@@ -110,8 +108,11 @@ dependencies {
     // crome
     implementation("androidx.browser:browser:1.8.0")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.36.0")
-    
     implementation("com.airbnb.android:lottie-compose:6.6.7")
     
+    //Room
+    implementation("androidx.room:room-runtime:2.8.4")
+    implementation("androidx.room:room-ktx:2.8.4")
+    kapt("androidx.room:room-compiler:2.8.4")
     
 }

@@ -152,7 +152,9 @@ fun NavGraph() {
                         slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Up, animationSpec = tween(400))
                     }
             ) {
-                NewsDetailScreen(navController)
+                NewsDetailScreen(
+                        navController = navController,
+                )
             }
             
             

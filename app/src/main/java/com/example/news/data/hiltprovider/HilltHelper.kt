@@ -1,4 +1,4 @@
-package com.example.news.data.remote
+package com.example.news.data.hiltprovider
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
