@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,6 +50,7 @@ fun MainNewsScreen(
         navController: NavController,
         viewModel: NewsViewModel = hiltViewModel(),
         OndetailClick: () -> Unit,
+        OnBookmarkScreen:()-> Unit
 ) {
     
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -71,7 +73,7 @@ fun MainNewsScreen(
                         onItemClick = { },
                         onLogOut = {
                             FirebaseAuth.getInstance().signOut()
-                            navController.navigate(Screen.LoginScreen.route){
+                            navController.navigate(Screen.LoginScreen.route) {
                                 popUpTo(0)
                             }
                         },
@@ -79,6 +81,9 @@ fun MainNewsScreen(
                             scope.launch {
                                 drawerState.close()
                             }
+                        },
+                        onBookmarkClick = {
+                            navController.navigate(Screen.BookMarkScreen.route)
                         }
                 )
             }
@@ -173,8 +178,11 @@ fun MainNewsScreen(
                         else -> {
                             LazyColumn(
                                     modifier = Modifier.fillMaxSize(),
-                                    verticalArrangement =
-                                        Arrangement.spacedBy(16.dp)
+                                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                                    contentPadding = PaddingValues(
+                                            horizontal = 10.dp,
+                                            vertical = 6.dp
+                                    )
                             ) {
                                 
                                 items(newsItems.itemCount) { index ->
@@ -190,6 +198,9 @@ fun MainNewsScreen(
                                                             ?.savedStateHandle
                                                             ?.set("news", it)
                                                     navController.navigate(Screen.DetailScreen.route)
+                                                },
+                                                onBookMark = { news ->
+                                                    viewModel.toggleBookmark(news)
                                                 }
                                         )
                                     }

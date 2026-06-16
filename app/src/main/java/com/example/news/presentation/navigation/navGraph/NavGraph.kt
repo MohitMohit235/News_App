@@ -11,6 +11,7 @@ import com.example.news.presentation.authentication.LoginScreen
 import com.example.news.presentation.authentication.SinghUpScreen
 import com.example.news.presentation.components.MianSearchScreen
 import com.example.news.presentation.navigation.route.Screen
+import com.example.news.presentation.onbodingscreens.BookMarkScreen
 import com.example.news.presentation.onbodingscreens.MainNewsScreen
 import com.example.news.presentation.onbodingscreens.NewsDetailScreen
 import com.example.news.presentation.onbodingscreens.OnBordScreen
@@ -139,6 +140,9 @@ fun NavGraph() {
                         navController = navController,
                         OndetailClick = {
                             navController.navigate(Screen.DetailScreen.route)
+                        },
+                        OnBookmarkScreen = {
+                            navController.navigate(Screen.BookMarkScreen.route)
                         }
                 )
             }
@@ -170,7 +174,19 @@ fun NavGraph() {
                 MianSearchScreen(navController = navController)
             }
             
+            composable (
+                    Screen.BookMarkScreen.route,
+                    enterTransition = {
+                        slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Up, animationSpec = tween(400))
+                    },
+                    exitTransition = {
+                        slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Up, animationSpec = tween(400))
+                    }
+            ){
+                BookMarkScreen(
+                        navController = navController
+                )
+            }
         }
-        
     }
 }

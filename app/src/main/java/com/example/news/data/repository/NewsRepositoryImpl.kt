@@ -5,8 +5,7 @@ import android.annotation.SuppressLint
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.example.news.data.localdatabase.BookMarkDao
-import com.example.news.data.localdatabase.NewsEntity
+import com.example.news.data.local.NewsDao
 import com.example.news.data.model.News
 import com.example.news.data.model.NewsList
 import com.example.news.data.pagging.NewsPaggingSource
@@ -17,7 +16,7 @@ import javax.inject.Inject
 
 class NewsRepositoryImpl @Inject constructor(
         private val api: ApiService,
-        private val bookMarkDao: BookMarkDao,
+        private val dao : NewsDao
 ) : NewsRepository {
     
     @SuppressLint("SuspiciousIndentation")
@@ -31,20 +30,6 @@ class NewsRepositoryImpl @Inject constructor(
             Result.failure(exp)
         }
     }
-    
-    override fun getBookMarkNews(): Flow<List<NewsEntity>> = bookMarkDao.getAllBookMarkNews()
-    
-    override fun isBookmark(newsId: String): Flow<Boolean> =
-        bookMarkDao.isNewsBoolMark(newsId = newsId)
-    
-    override suspend fun addBookMark(news: NewsEntity) {
-        bookMarkDao.saveBookMark(news = news)
-    }
-    
-    override suspend fun removeBookMark(news: NewsEntity) {
-        bookMarkDao.removeBookMark(news = news)
-    }
-    
     
     override fun getPagesNews(
             category: String,
@@ -61,6 +46,37 @@ class NewsRepositoryImpl @Inject constructor(
                     NewsPaggingSource(api, category, query, cuntry)
                 },
         ).flow
+    }
+    
+    override suspend fun saveNews(news: News) {
+        dao.insertAllNews(listOf(news))
+    }
+    
+    override suspend fun toggleBookMark(news: News) {
+        dao.insertAllNews(
+                listOf(
+                        news.copy(
+                                link = news.link ?:"",
+                                isBookmarked = true
+                        )
+                )
+        )
+    }
+    
+    override fun getBookmarkedNews(): Flow<List<News>> {
+        return dao.getBookMarkNews()
+    }
+    
+    override suspend fun markAsRead(news: News) {
+        dao.markAsRead(news.artical_id?:return)
+    }
+    
+    override fun getRecentlyRead(): Flow<List<News>> {
+        return dao.getRecentlyRead()
+    }
+    
+    override suspend fun deleteNews(news: News) {
+        dao.deleteNews(news)
     }
     
 }

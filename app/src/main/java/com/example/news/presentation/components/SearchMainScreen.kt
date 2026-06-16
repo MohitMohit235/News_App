@@ -121,6 +121,10 @@ fun MianSearchScreen(
                                                 ?.set("news", item)
                                         navController.navigate(Screen.DetailScreen.route)
                                     },
+                                    onBookMark = { news ->
+                                        viewModel.saveNews(news)
+                                        viewModel.toggleBookmark(news)
+                                    }
                             )
                         }
                     }

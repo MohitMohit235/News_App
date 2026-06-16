@@ -2,8 +2,8 @@ package com.example.news.data.hiltprovider
 
 import android.content.Context
 import androidx.room.Room
-import com.example.news.data.localdatabase.AppDataBase
-import com.example.news.data.localdatabase.BookMarkDao
+import com.example.news.data.local.NewsDao
+import com.example.news.data.local.NewsDataBase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,18 +20,20 @@ object DataBaseModule {
     @Singleton
     fun provideAppDataBase(
             @ApplicationContext context: Context,
-    ): AppDataBase {
+    ): NewsDataBase {
         return Room.databaseBuilder(
                 context = context,
-                AppDataBase::class.java,
+                NewsDataBase::class.java,
                 "news_database"
-        ).build()
+        )
+                .fallbackToDestructiveMigration()
+                .build()
     }
     
     @Provides
     @Singleton
-    fun provideBookMarkDao(database: AppDataBase): BookMarkDao{
-        return database.bookMarkDao()
+    fun provideNewsDao(dataBase: NewsDataBase): NewsDao{
+        return dataBase.newsDao()
     }
     
 }

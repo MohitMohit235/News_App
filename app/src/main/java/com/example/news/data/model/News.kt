@@ -1,7 +1,6 @@
 package com.example.news.data.model
 
 import android.os.Parcelable
-import com.example.news.data.localdatabase.NewsEntity
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

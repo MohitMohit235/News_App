@@ -58,6 +58,17 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    
+    packaging {
+        resources {
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
+    }
+    
+}
+
+kapt{
+    correctErrorTypes = true
 }
 
 dependencies {
@@ -77,22 +88,24 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(libs.androidx.compose.foundation)
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.core:core-splashscreen:1.2.0")
     implementation("androidx.navigation:navigation-compose:2.8.8")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+    implementation("io.coil-kt:coil-compose:2.7.0")
     implementation("androidx.datastore:datastore-preferences:1.2.1")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.31.4-beta")
-    implementation("androidx.paging:paging-runtime:3.2.1")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
-    implementation("androidx.paging:paging-compose:3.2.1")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.34.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("com.google.dagger:hilt-android:2.57.1")
-    kapt("com.google.dagger:hilt-compiler:2.57.1")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
+    implementation("androidx.paging:paging-runtime:3.5.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.4.0")
+    implementation("androidx.paging:paging-compose:3.5.0")
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.36.0")
     
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+    //Hilt
+    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
+    implementation("com.google.dagger:hilt-android:2.57.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.57.1")
+    
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
     implementation("androidx.compose.material:material-icons-core")
     implementation("androidx.compose.material:material-icons-extended")
     
@@ -106,7 +119,7 @@ dependencies {
     
     
     // crome
-    implementation("androidx.browser:browser:1.8.0")
+    implementation("androidx.browser:browser:1.10.0")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.36.0")
     implementation("com.airbnb.android:lottie-compose:6.6.7")
     

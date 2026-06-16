@@ -61,7 +61,7 @@ fun NewsDetailScreen(
                 ?.get<News>("news")
     
     
-    val isSaved by viewModel.isNewsSave(news?.artical_id).collectAsState(initial = false)
+   
     
     LazyColumn(
             modifier = Modifier

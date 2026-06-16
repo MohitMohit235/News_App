@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessibilityNew
 import androidx.compose.material.icons.outlined.ArrowRight
+import androidx.compose.material.icons.outlined.Bookmarks
 import androidx.compose.material.icons.outlined.Help
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
@@ -22,10 +23,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
+import com.example.news.R
 import com.example.news.presentation.navigation.route.Screen
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -35,7 +39,11 @@ fun DrawerContent(
         onItemClick: (String) -> Unit,
         onClose: () -> Unit,
         onLogOut: () -> Unit,
+        onBookmarkClick:()-> Unit
 ) {
+    
+    val font = FontFamily(Font(R.font.jrfonts))
+    
     val items = listOf(
             menuitems(
                     icon = Icons.Outlined.Home,
@@ -43,16 +51,11 @@ fun DrawerContent(
                     secondryLabel = null
             ),
             menuitems(
-                    icon = Icons.Outlined.TrendingUp,
-                    label = "Trending",
+                    icon = Icons.Outlined.Bookmarks,
+                    label = "BookMarks",
                     secondryLabel = null
             ),
-            menuitems(
-                    icon = Icons.Outlined.Settings,
-                    label = "Setting",
-                    secondryLabel = null
-            ),
-         
+            
             menuitems(
                     icon = Icons.Outlined.Help,
                     label = "Help & Support",
@@ -78,36 +81,48 @@ fun DrawerContent(
     ) {
         Text(
                 "Khabar Menu",
+                fontFamily = font,
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(16.dp)
         )
         
         items.forEach { item ->
             NavigationDrawerItem(
-                    label = { Text(item.label) },
+                    label = {
+                        Text(
+                                item.label,
+                                fontFamily = font,
+                        )
+                    },
                     selected = false,
                     onClick = {
-                        onItemClick("settings")
+                        if (item.label == "BookMarks") {
+                            onBookmarkClick()
+                        } else {
+                            onItemClick(item.label)
+                        }
                         onClose()
                     },
-                    icon = {Icon(item.icon,contentDescription = null)}
+                    icon = { Icon(item.icon, contentDescription = null) }
             )
         }
         
         TextButton(
-                onClick = {onLogOut()},
+                onClick = { onLogOut() },
                 modifier = Modifier
-        ){
+        ) {
             Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
-            ){
-            Text(
-                    text = "Logout",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontFamily = FontFamily.Monospace,
-                    
-            )
+            ) {
+                Text(
+                        
+                        text = "Logout",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.SemiBold
+                        
+                        )
                 Icon(
                         imageVector = Icons.Outlined.ArrowRight,
                         contentDescription = null,

@@ -4,8 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
-import com.example.news.data.localdatabase.NewsEntity
-import com.example.news.data.localdatabase.toNewsEntity
 import com.example.news.data.model.News
 import com.example.news.data.model.NewsList
 import com.example.news.data.repository.NewsRepositoryImpl
@@ -25,137 +23,173 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NewsViewModel @Inject constructor(
-    private val viewModelRepository: NewsRepositoryImpl
-): ViewModel(){
-        private val _NewsData =
-            MutableStateFlow(NewsState())
-        val newsData : StateFlow<NewsState> =
-            _NewsData
-
-        private var currentcategory: String? =
-            null
-
+        private val viewModelRepository: NewsRepositoryImpl,
+) : ViewModel() {
+    private val _NewsData =
+        MutableStateFlow(NewsState())
+    val newsData: StateFlow<NewsState> =
+        _NewsData
+    
+    private var currentcategory: String? =
+        null
+    
     private val searchQuery =
         MutableStateFlow("india")
-
+    
     private val category =
         MutableStateFlow("top")
-
+    
     private val cuntry =
         MutableStateFlow("in")
     
     
-    val bookmarkNews : StateFlow<List<NewsEntity>> = viewModelRepository.getBookMarkNews()
-            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000),emptyList())
-    
-
     val news =
         combine(
-            category,
-            searchQuery,
-            cuntry
-        ) { category, query , country->
-            Triple(
                 category,
-                query,
-                country
+                searchQuery,
+                cuntry
+        ) { category, query, country ->
+            Triple(
+                    category,
+                    query,
+                    country
             )
-
+            
         }
-            .flatMapLatest { (category, query,cuntry) ->
-
-                viewModelRepository.getPagesNews(
-                    category = category,
-                    query = query,
-                    cuntry = cuntry
-                )
-            }
-            .cachedIn(viewModelScope)
-
+                .flatMapLatest { (category, query, cuntry) ->
+                    
+                    viewModelRepository.getPagesNews(
+                            category = category,
+                            query = query,
+                            cuntry = cuntry
+                    )
+                }
+                .cachedIn(viewModelScope)
+    
+    
     fun searchQuery(query: String) {
         searchQuery.value = query
     }
-
+    
     fun changeCategory(category: String) {
         this.category.value = category
     }
-
+    
     fun changeCountry(countryCode: String) {
         cuntry.value = countryCode
     }
     
-    fun isNewsSave(newsId: String?): Flow<Boolean> = viewModelRepository.isBookmark(newsId = newsId?:"")
     
     init {
         getNewsData(category = "top")
     }
-
-
-    fun toggleButton(news: News, isCurrentlySaves: Boolean){
+    
+    fun getNewsData(category: String) {
+        if (currentcategory == category) return
+        currentcategory = category
         viewModelScope.launch {
-            if (isCurrentlySaves){
-                viewModelRepository.removeBookMark(news = news.toNewsEntity())
-            }else {
-                viewModelRepository.addBookMark(news = news.toNewsEntity())
+            
+            try {
+                
+                
+                _NewsData.value = _NewsData.value.copy(
+                        Loading = true,
+                        Falior = null
+                )
+                
+                val result = withContext(Dispatchers.IO) {
+                    viewModelRepository.getNews(category)
+                }
+                
+                result.onSuccess { data ->
+                    Log.d(
+                            "NEWS_API",
+                            "Success: ${data.results}"
+                    )
+                    
+                    _NewsData.value = _NewsData.value.copy(
+                            Loading = false,
+                            Success = data,
+                            Falior = null
+                    )
+                }
+                
+                result.onFailure { faildata ->
+                    
+                    _NewsData.value = _NewsData.value.copy(
+                            Loading = false,
+                            Falior = faildata.message ?: "Error"
+                    )
+                }
+                
+            } catch (e: Exception) {
+                
+                _NewsData.value = _NewsData.value.copy(
+                        Loading = false,
+                        Falior = e.message ?: "Error Occurred now"
+                )
             }
         }
     }
     
-    fun getNewsData(category: String){
-        if (currentcategory==category) return
-        currentcategory = category
+    val bookmarkedNews: StateFlow<List<News>> =
+        viewModelRepository.getBookmarkedNews()
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    
+    
+    
+    val recentlyRead: StateFlow<List<News>> =
+        viewModelRepository.getRecentlyRead()
+                .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    
+    
+    fun bookmarkNews(news: News){
         viewModelScope.launch {
-
-           try {
-
-
-              _NewsData.value = _NewsData.value.copy(
-                  Loading = true,
-                  Falior = null
-              )
-
-               val result = withContext(Dispatchers.IO){
-                   viewModelRepository.getNews(category)
-               }
-
-               result.onSuccess{ data ->
-                   Log.d(
-                       "NEWS_API",
-                       "Success: ${data.results}"
-                   )
-
-                    _NewsData.value = _NewsData.value.copy(
-                        Loading = false,
-                        Success = data,
-                        Falior = null
-                    )
-               }
-
-               result.onFailure { faildata->
-
-                   _NewsData.value = _NewsData.value.copy(
-                       Loading = false,
-                       Falior = faildata.message?:"Error"
-                   )
-               }
-
-           } catch (e: Exception){
-
-                   _NewsData.value = _NewsData.value.copy(
-                       Loading = false,
-                       Falior = e.message ?:"Error Occurred now"
-                   )
-
-           }
+            viewModelRepository.saveNews(news.copy(isBookmarked = true))
         }
     }
+    
+    fun removebookmarkNews(news: News){
+        viewModelScope.launch {
+            viewModelRepository.saveNews(news.copy(isBookmarked = false))
+        }
+    }
+    
+    fun toggleBookmark(news: News) {
+        viewModelScope.launch {
+            Log.d("BOOKMARK", "artical_id: ${news.artical_id}")
+            Log.d("BOOKMARK", "title: ${news.title}")
+            viewModelRepository.saveNews(news.copy(isBookmarked = !news.isBookmarked))
+        }
+    }
+    
+    
+    fun markAsRead(news: News) {
+        viewModelScope.launch {
+            viewModelRepository.markAsRead(news)
+        }
+    }
+    
+    
+    
+    fun saveNews(news: News) {
+        viewModelScope.launch {
+            viewModelRepository.saveNews(news)
+        }
+    }
+    
+    
+    fun deleteNews(news: News) {
+        viewModelScope.launch {
+            viewModelRepository.deleteNews(news)
+        }
+    }
+    
 }
 
 
-
-
 data class NewsState(
-    val Loading : Boolean = false,
-    val Success: NewsList? = null,
-    val Falior: String? = null
+        val Loading: Boolean = false,
+        val Success: NewsList? = null,
+        val Falior: String? = null,
 )
