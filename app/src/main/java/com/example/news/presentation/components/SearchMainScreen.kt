@@ -65,7 +65,11 @@ fun MianSearchScreen(
                     }
                 },
                 trailingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = "Search")
+                    IconButton(onClick = {
+                            viewModel.searchQuery(query = query)
+                    }) {
+                        Icon(Icons.Default.Search, contentDescription = "Search")
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = SearchBarDefaults.colors(

@@ -10,8 +10,7 @@ interface NewsRepository {
     
     fun getPagesNews(
             category: String,
-            query: String,
-            cuntry: String,
+            query: String
     ): Flow<PagingData<News>>
     
     suspend fun saveNews(news: News)

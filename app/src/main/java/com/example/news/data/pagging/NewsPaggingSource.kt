@@ -11,7 +11,6 @@ class NewsPaggingSource(
     private val apiService: ApiService,
     private val category: String?,
     private val searchQuery: String?,
-    private val cuntry: String?
 ) : PagingSource<String, News>() {
 
     override fun getRefreshKey(
@@ -32,7 +31,6 @@ class NewsPaggingSource(
                 category = category,
                 page = pageToken,
                 searchQuery = searchQuery,
-                county = cuntry
             )
 
             Log.d(

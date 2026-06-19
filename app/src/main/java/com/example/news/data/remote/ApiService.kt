@@ -16,7 +16,6 @@ interface ApiService {
             @Query("apikey") apiKey: String = "pub_cb4140cfede24d6ab3514922638ae865",
             @Query("category") category: String?=null,
             @Query("q") searchQuery: String?=null,
-            @Query("country") county: String?=null,
-            @Query("page") page : String? = null,
+            @Query("page") page : String? = null
         ): NewsList
 }

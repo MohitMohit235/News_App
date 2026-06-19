@@ -1,5 +1,4 @@
 package com.example.news.presentation.viewmodel
-
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -46,22 +45,19 @@ class NewsViewModel @Inject constructor(
     val news =
         combine(
                 category,
-                searchQuery,
-                cuntry
-        ) { category, query, country ->
-            Triple(
+                searchQuery
+        ) { category, query ->
+            Pair(
                     category,
-                    query,
-                    country
+                    query
             )
             
         }
-                .flatMapLatest { (category, query, cuntry) ->
+                .flatMapLatest { (category, query) ->
                     
                     viewModelRepository.getPagesNews(
                             category = category,
                             query = query,
-                            cuntry = cuntry
                     )
                 }
                 .cachedIn(viewModelScope)

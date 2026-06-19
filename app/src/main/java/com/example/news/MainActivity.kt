@@ -1,7 +1,6 @@
 package com.example.news
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -13,8 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import com.example.news.presentation.navigation.navGraph.NavGraph
-import com.example.news.presentation.onbodingscreens.OnBordScreen
-import com.example.news.ui.theme.NewsTheme
+import com.example.news.presentation.ui.theme.NewsTheme
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 

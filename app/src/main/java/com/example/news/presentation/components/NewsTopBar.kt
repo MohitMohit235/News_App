@@ -132,9 +132,10 @@ fun NewsTopBar(
                     modifier = Modifier.wrapContentWidth()
             ) {
                 
-                IconButton(onClick = {
-                    onSearchClick()
-                }
+                IconButton(
+                        onClick = {
+                            onSearchClick()
+                        }
                 ) {
                     Icon(
                             imageVector = Icons.Default.Search,
@@ -143,96 +144,6 @@ fun NewsTopBar(
                             modifier = Modifier.size(30.dp)
                     )
                 }
-                
-                
-                
-                Box(
-                        modifier = Modifier,
-                        contentAlignment = Alignment.CenterEnd
-                ) {
-                    IconButton(
-                            onClick = { showCountryBarPage = !showCountryBarPage },
-                            modifier = Modifier
-                                    .width(100.dp)
-                            //   .padding(horizontal = 5.dp)
-                    ) {
-                        
-                        Row(
-                                verticalAlignment = Alignment.Bottom,
-                                horizontalArrangement = Arrangement.spacedBy(5.dp)
-                        ) {
-                            Icon(
-                                    imageVector = Icons.Outlined.Language,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onBackground
-                            )
-                            
-                            Text(
-                                    text = selectedCountry,
-                                    fontFamily = iconFonts,
-                                    fontSize = 15.sp,
-                                    overflow = TextOverflow.Ellipsis,
-                                    color = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    }
-                    
-                    DropdownMenu(
-                            expanded = showCountryBarPage,
-                            containerColor = MaterialTheme.colorScheme.onBackground,
-                            onDismissRequest = { showCountryBarPage = false }
-                    ) {
-                        repeat(commen.cuntryList.size) { index ->
-                            DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                                text = commen.cuntryList[index],
-                                                color = MaterialTheme.colorScheme.background,
-                                                fontSize = 15.sp,
-                                                fontWeight = FontWeight.SemiBold,
-                                                modifier = Modifier
-                                                        .padding(horizontal = 8.dp)
-                                        )
-                                    },
-                                    onClick = {
-                                        
-                                        val selected =
-                                            commen.cuntryList[index]
-                                        
-                                        selectedCountry =
-                                            selected
-                                        
-                                        showCountryBarPage = false
-                                        
-                                        viewModel.changeCountry(
-                                                countryCodeMap[selected]
-                                                    ?: "in"
-                                        )
-                                    }
-                            )
-                        }
-                    }
-                }
-                
-                IconButton(
-                        onClick = {},
-                        modifier = Modifier
-                                .border(
-                                        width = 1.dp,
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        shape = CircleShape
-                                )
-                                .size(50.dp)
-                ) {
-                    Image(
-                            painter = painterResource(R.drawable.nature),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                    )
-                }
-                
-                
             }
         }
     }
