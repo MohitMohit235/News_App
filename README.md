@@ -9,18 +9,19 @@ A modern Android News Application built using
 
 This app fetches real-time news from the **NewsData API** and displays category-based news with smooth pagination and a clean modern UI.
 ---------------------------
-## ✨ Features
+## Features
 
-* 📱 Modern UI with Jetpack Compose
-* 🗂️ Category-based news filtering
-* 🔄 Infinite scrolling using Paging 3
-* ⚡ Real-time API integration with Retrofit
-* 🧠 Clean Architecture using MVVM
-* 💉 Dependency Injection with Hilt
-* 🔍 Search Bar UI
-* 📑 Horizontal category tabs
-* 🌙 Material Design 3 support
-* ⏳ Shimmer Loading Effect
+* Modern UI with Jetpack Compose
+* Category-based news filtering
+* Infinite scrolling using Paging 3
+* Real-time API integration with Retrofit
+* Clean Architecture using MVVM
+* Dependency Injection with Hilt
+* Search Bar UI
+* Horizontal category tabs
+* Material Design 3 support
+* Shimmer Loading Effect
+* Room DataBase
 
 --------------------------
 
@@ -48,21 +49,23 @@ com.example.news
 │── data
 │   ├── model
 │   ├── remote
-│   ├── repository
+│   ├── repositoryimpl
 │   └── pagging
 │
 │── domain
-│   └── NewsViewModel
-│
+│   └── repository
+│   └── usecase
+|   
 │── presentation
 │   ├── common
 │   ├── onboarding
+|   ├── Newsviewmodel
 │   └── animationEffects
 ```
 
 ---------------------
 
-## 🚀 API Used
+##API Used
 
 This project uses the **NewsData API** for fetching latest news.
 
@@ -81,7 +84,7 @@ latest
 
 ------------------
 
-## 🏗️ Architecture
+## Architecture
 
 This project follows the **MVVM (Model-View-ViewModel)** architecture.
 
@@ -99,7 +102,7 @@ NewsData API
 
 -------------------
 
-## ⚙️ Installation
+## Installation
 
 ### 1. Clone the repository
 
@@ -116,7 +119,7 @@ https://developer.android.com/studio
 
 ### 4. Run the App 
 
-## 🔑 API Key Setup
+## API Key Setup
 
 https://newsdata.io/
 
@@ -133,7 +136,7 @@ apiKey: String = "YOUR_API_KEY"
 
 ---
 
-## 👨‍💻 Developer
+##  Developer
 
 **Mohit Prajapati**
 
@@ -147,6 +150,6 @@ https://www.linkedin.com/in/mohit-prajapati-58830830b/
 
 ---
 
-## ⭐ Support
+##  Support
 
 If you like this project, give it a **star ⭐ on GitHub**.
