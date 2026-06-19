@@ -1,4 +1,4 @@
-# Khabar App
+#                                                                                 Khabar App
 
 A modern Android News Application built using
 **Jetpack Compose**,
