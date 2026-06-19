@@ -8,7 +8,6 @@ import com.example.news.data.model.NewsList
 import com.example.news.data.repository.NewsRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -32,14 +31,11 @@ class NewsViewModel @Inject constructor(
     private var currentcategory: String? =
         null
     
-    private val searchQuery =
-        MutableStateFlow("india")
+    private val searchQuery = MutableStateFlow("")
     
-    private val category =
-        MutableStateFlow("top")
+    private val category = MutableStateFlow("top")
     
-    private val cuntry =
-        MutableStateFlow("in")
+    
     
     
     val news =
@@ -69,10 +65,6 @@ class NewsViewModel @Inject constructor(
     
     fun changeCategory(category: String) {
         this.category.value = category
-    }
-    
-    fun changeCountry(countryCode: String) {
-        cuntry.value = countryCode
     }
     
     
@@ -153,8 +145,6 @@ class NewsViewModel @Inject constructor(
     
     fun toggleBookmark(news: News) {
         viewModelScope.launch {
-            Log.d("BOOKMARK", "artical_id: ${news.artical_id}")
-            Log.d("BOOKMARK", "title: ${news.title}")
             viewModelRepository.saveNews(news.copy(isBookmarked = !news.isBookmarked))
         }
     }
