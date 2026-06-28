@@ -2,6 +2,7 @@ package com.example.news.data.repository
 
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -12,6 +13,7 @@ import com.example.news.data.pagging.NewsPaggingSource
 import com.example.news.data.remote.ApiService
 import com.example.news.domain.repository.NewsRepository
 import kotlinx.coroutines.flow.Flow
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class NewsRepositoryImpl @Inject constructor(
@@ -26,8 +28,13 @@ class NewsRepositoryImpl @Inject constructor(
                     category = category
             )
             Result.success(response)
-        } catch (exp: Exception) {
-            Result.failure(exp)
+        } catch (e: Exception) {
+            if (e is HttpException) {
+                Log.e("HTTP_CODE", e.code().toString())
+                Log.e("HTTP_BODY", e.response()?.errorBody()?.string().toString())
+            }
+            
+            Result.failure(e)
         }
     }
     

@@ -6,6 +6,7 @@ import androidx.paging.PagingState
 import androidx.room.Query
 import com.example.news.data.model.News
 import com.example.news.data.remote.ApiService
+import retrofit2.HttpException
 
 class NewsPaggingSource(
     private val apiService: ApiService,
@@ -30,7 +31,7 @@ class NewsPaggingSource(
             val response = apiService.getNewsList(
                 category = category,
                 page = pageToken,
-                searchQuery = searchQuery,
+                searchQuery = searchQuery?.takeIf { it.isNotBlank() },
             )
 
             Log.d(
@@ -47,12 +48,12 @@ class NewsPaggingSource(
             )
 
         } catch (e: Exception) {
-
-            Log.e(
-                "PAGING_ERROR",
-                e.message.toString()
-            )
-
+            
+            if (e is HttpException) {
+                Log.e("HTTP_CODE", e.code().toString())
+                Log.e("HTTP_BODY", e.response()?.errorBody()?.string().toString())
+            }
+            
             LoadResult.Error(e)
         }
     }

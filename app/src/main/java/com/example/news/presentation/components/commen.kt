@@ -45,51 +45,7 @@ object commen {
          "Argentina"
         )
 
-    val countryCodeMap = mapOf(
-
-        "India" to "in",
-        "United States" to "us",
-        "United Kingdom" to "gb",
-        "Canada" to "ca",
-        "Australia" to "au",
-        "United Arab Emirates" to "ae",
-        "Saudi Arabia" to "sa",
-        "Qatar" to "qa",
-        "Pakistan" to "pk",
-        "Bangladesh" to "bd",
-        "Nepal" to "np",
-        "Sri Lanka" to "lk",
-        "Afghanistan" to "af",
-        "China" to "cn",
-        "Japan" to "jp",
-        "South Korea" to "kr",
-        "Singapore" to "sg",
-        "Malaysia" to "my",
-        "Indonesia" to "id",
-        "Thailand" to "th",
-        "Vietnam" to "vn",
-        "Germany" to "de",
-        "France" to "fr",
-        "Italy" to "it",
-        "Spain" to "es",
-        "Netherlands" to "nl",
-        "Sweden" to "se",
-        "Switzerland" to "ch",
-        "Russia" to "ru",
-        "Ukraine" to "ua",
-        "Israel" to "il",
-        "Palestine" to "ps",
-        "Iran" to "ir",
-        "Iraq" to "iq",
-        "Turkey" to "tr",
-        "Egypt" to "eg",
-        "South Africa" to "za",
-        "Nigeria" to "ng",
-        "Brazil" to "br",
-        "Mexico" to "mx",
-        "Argentina" to "ar"
-    )
-
+    
     val categories = listOf(
         "top",
         "business",
